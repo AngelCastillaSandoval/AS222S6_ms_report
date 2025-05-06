@@ -21,69 +21,73 @@
 	<properties>
 		<java.version>17</java.version>
 		<sonar.organization>angelcastillasandoval</sonar.organization>
-                <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
 
 	<dependencies>
-		<!-- WebFlux + R2DBC -->
+		<!-- 🔹 WebFlux para programación reactiva -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
 
+		<!-- 🔹 R2DBC para conexión reactiva con base de datos -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-r2dbc</artifactId>
 		</dependency>
 
-		<!-- Kafka -->
+		<!-- 🔹 Kafka para mensajería -->
 		<dependency>
 			<groupId>org.springframework.kafka</groupId>
 			<artifactId>spring-kafka</artifactId>
 		</dependency>
 
-		<!-- PostgreSQL + R2DBC -->
+		<!-- 🔹 PostgreSQL Driver (JDBC) para desarrollo local si se necesita -->
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- 🔹 PostgreSQL Driver (R2DBC) para conexión reactiva -->
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>r2dbc-postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 
-		<!-- Validaciones -->
+		<!-- 🔹 Validaciones con anotaciones como @NotNull, @Size, etc -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 
-		<!-- Seguridad JWT (Firebase) -->
+		<!-- 🔐 Seguridad con JWT (Firebase) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 
+		<!-- 🔐 Soporte para recursos protegidos OAuth2 (JWT tokens) -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-oauth2-resource-server</artifactId>
 		</dependency>
 
+		<!-- 🔐 Soporte para procesamiento de tokens JWT (firmas, claims, etc.) -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-oauth2-jose</artifactId>
 		</dependency>
 
-		<!-- WebClient + Base64 -->
+		<!-- 🔧 Codificación Base64 (para imágenes, archivos) -->
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
 		</dependency>
 
-		<!-- DevTools (solo para desarrollo) -->
+		<!-- 🛠 DevTools (solo para desarrollo, reinicio automático, etc) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
@@ -91,33 +95,35 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- Lombok -->
+		<!-- 🧠 Anotaciones de Lombok como @Getter, @Setter, @Builder -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- Dotenv -->
+		<!-- 🌱 Dotenv para cargar variables de entorno (.env) -->
 		<dependency>
 			<groupId>io.github.cdimascio</groupId>
 			<artifactId>dotenv-java</artifactId>
 			<version>3.0.0</version>
 		</dependency>
 
-		<!-- JasperReports -->
+		<!-- 📄 JasperReports para generación de PDFs -->
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports</artifactId>
 			<version>7.0.2</version>
 		</dependency>
 
+		<!-- 📄 Compatibilidad con PDF (iText usado por JasperReports) -->
 		<dependency>
 			<groupId>com.itextpdf</groupId>
 			<artifactId>itextpdf</artifactId>
 			<version>5.5.13.3</version>
 		</dependency>
 
+		<!-- 📄 Funciones adicionales para JasperReports -->
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports-functions</artifactId>
@@ -130,33 +136,46 @@
 			<version>7.0.2</version>
 		</dependency>
 
-		<!-- Tests -->
+		<!-- ✅ Dependencias de Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<!-- Excluir MVC clásico -->
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.junit.vintage</groupId>
+					<artifactId>junit-vintage-engine</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
+		<!-- 🔁 Test para operadores reactivos -->
 		<dependency>
 			<groupId>io.projectreactor</groupId>
 			<artifactId>reactor-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 
+		<!-- 🧪 Kafka test -->
 		<dependency>
 			<groupId>org.springframework.kafka</groupId>
 			<artifactId>spring-kafka-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 	</dependencies>
 
 	<build>
 		<plugins>
+			<!-- 🔧 Plugin de compilación con soporte para Lombok -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.11.0</version> <!-- versión reciente -->
+				<version>3.11.0</version>
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
@@ -164,17 +183,24 @@
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
-							<version>1.18.30</version> <!-- versión recomendada -->
+							<version>1.18.30</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
 
+			<!-- 🔧 Plugin de Spring Boot para empaquetado -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+
+			<!-- 📊 Plugin SonarCloud (opcional si analizas con GitHub Actions) -->
+			<plugin>
+				<groupId>org.sonarsource.scanner.maven</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>3.11.0.3922</version>
+			</plugin>
 		</plugins>
 	</build>
-
 </project>
