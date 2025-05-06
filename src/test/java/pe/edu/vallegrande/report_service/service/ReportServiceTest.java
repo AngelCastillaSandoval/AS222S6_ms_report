@@ -112,28 +112,29 @@ public class ReportServiceTest {
                 .verifyComplete();
     }
 
-
     @Test
     void testFindFilteredReportsWithAllFilters() {
         // Arrange
         Report report1 = createSampleReport(1, 2023, "Q2", "Descripción 1", "A");
 
+        // Taller asociado al reporte, con workshopId
         ReportWorkshop workshop1 = createSampleWorkshop(1, 1, 101, "Taller 1",
                 null, null, "Descripción taller 1");
 
-        WorkshopCache cache1 = new WorkshopCache();
-        cache1.setId(101);
-        cache1.setName("Taller 1 desde cache");
-        cache1.setDateStart(LocalDate.of(2023, 4, 1));
-        cache1.setDateEnd(LocalDate.of(2023, 6, 30));
-        cache1.setStatus("A");
+        // Simula que hay cache del taller
+        WorkshopCache cache = new WorkshopCache();
+        cache.setId(101);
+        cache.setName("Taller desde cache");
+        cache.setDateStart(LocalDate.of(2023, 4, 10)); // Está dentro del filtro
+        cache.setDateEnd(LocalDate.of(2023, 5, 20));   // Está dentro del filtro
+        cache.setStatus("A");
 
         when(reportRepository.findByStatus("A")).thenReturn(Flux.just(report1));
         when(reportWorkshopRepository.findByReportId(1)).thenReturn(Flux.just(workshop1));
-        when(workshopCacheRepository.findById(101)).thenReturn(Mono.just(cache1));
+        when(workshopCacheRepository.findById(101)).thenReturn(Mono.just(cache));
 
-        LocalDate startDate = LocalDate.of(2023, 4, 15);
-        LocalDate endDate = LocalDate.of(2023, 5, 30);
+        LocalDate startDate = LocalDate.of(2023, 4, 1);
+        LocalDate endDate = LocalDate.of(2023, 6, 30);
 
         // Act & Assert
         StepVerifier.create(reportService.findFilteredReports("A", "Q2", 2023, startDate, endDate))
@@ -141,11 +142,13 @@ public class ReportServiceTest {
                         reportWithWorkshops.getReport().getStatus().equals("A") &&
                                 reportWithWorkshops.getReport().getTrimester().equals("Q2") &&
                                 reportWithWorkshops.getReport().getYear().equals(2023) &&
-                                reportWithWorkshops.getWorkshops().size() == 1
+                                reportWithWorkshops.getWorkshops().size() == 1 &&
+                                reportWithWorkshops.getWorkshops().get(0).getWorkshopName().equals("Taller desde cache") &&
+                                reportWithWorkshops.getWorkshops().get(0).getWorkshopDateStart().equals(LocalDate.of(2023, 4, 10)) &&
+                                reportWithWorkshops.getWorkshops().get(0).getWorkshopDateEnd().equals(LocalDate.of(2023, 5, 20))
                 )
                 .verifyComplete();
     }
-
 
     @Test
     void testFindByIdWithDateFilter() {
