@@ -3,6 +3,9 @@ package pe.edu.vallegrande.report_service.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import pe.edu.vallegrande.report_service.dto.ReportDto;
 import pe.edu.vallegrande.report_service.dto.ReportWithWorkshopsDto;
 import pe.edu.vallegrande.report_service.dto.ReportWorkshopDto;
@@ -384,6 +387,53 @@ public class ReportServiceTest {
     }
 
     @Test
+    void generatePdfByIdWithDateFilter_shouldGeneratePdf() {
+        // Arrange
+        int reportId = 1;
+        LocalDate start = LocalDate.of(2024, 1, 1);
+        LocalDate end = LocalDate.of(2024, 3, 31);
+
+        // ✅ Cargar imagen local desde resources
+        String imagePath = getClass().getClassLoader().getResource("images/mi-logo.png").toExternalForm();
+
+        Report mockReport = Report.builder()
+                .id(reportId)
+                .year(2024)
+                .trimester("Enero-Marzo")
+                .description("Test Report")
+                .status("ACTIVE")
+                .schedule(imagePath) // ✅ aquí debe ir una URL válida, no solo "horario.jpg"
+                .build();
+
+        ReportWorkshop mockWorkshop = ReportWorkshop.builder()
+                .id(10)
+                .reportId(reportId)
+                .workshopName("Taller de prueba")
+                .description("Descripción")
+                .workshopDateStart(start)
+                .workshopDateEnd(end)
+                .imageUrl(new String[]{imagePath})
+                .build();
+
+        when(reportRepository.findById(reportId)).thenReturn(Mono.just(mockReport));
+        when(reportWorkshopRepository.findByReportId(reportId)).thenReturn(Flux.just(mockWorkshop));
+        when(supabaseStorageService.uploadPdf(any(), any(), any())).thenReturn(Mono.empty());
+        when(supabaseStorageService.fileExists(any(), any())).thenReturn(Mono.just(false));
+
+        // Act
+        Mono<ResponseEntity<byte[]>> result = reportService.generatePdfByIdWithDateFilter(reportId, start, end);
+
+        // Assert
+        StepVerifier.create(result)
+                .expectNextMatches(response ->
+                        response.getStatusCode() == HttpStatus.OK &&
+                                response.getHeaders().getContentType().equals(MediaType.APPLICATION_PDF) &&
+                                response.getBody().length > 0
+                )
+                .verifyComplete();
+    }
+
+    @Test
     void testFilterWorkshopByDate_WithWorkshopId() {
         // Arrange
         Integer workshopId = 101;
@@ -483,5 +533,6 @@ public class ReportServiceTest {
             throw new RuntimeException(e);
         }
     }
+
 
 }
