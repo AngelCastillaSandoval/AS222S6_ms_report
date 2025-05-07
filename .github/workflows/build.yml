@@ -38,9 +38,20 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar
 
       - name: 🔬 Ejecutar tests y generar cobertura
-        run: mvn clean verify jacoco:report
+        run: mvn clean verify
 
       - name: 📊 Análisis SonarCloud
         env:
+          BOOTSTRAP_SERVER: ${{ secrets.BOOTSTRAP_SERVER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          KAFKA_PASSWORD: ${{ secrets.KAFKA_PASSWORD }}
+          KAFKA_USERNAME: ${{ secrets.KAFKA_USERNAME }}
+          PORT: ${{ secrets.PORT }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SUPABASE_API_KEY: ${{ secrets.SUPABASE_API_KEY }}
+          SUPABASE_BUCKET: ${{ secrets.SUPABASE_BUCKET }}
+          SUPABASE_FOLDER: ${{ secrets.SUPABASE_FOLDER }}
+          SUPABASE_PROJECT_URL: ${{ secrets.SUPABASE_PROJECT_URL }}
         run: mvn sonar:sonar -Dsonar.projectKey=AngelCastillaSandoval_AS222S6_ms_report
