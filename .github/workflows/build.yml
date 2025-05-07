@@ -36,8 +36,8 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      - name: 🔨 Compilar proyecto sin tests
-        run: mvn install -DskipTests
+      - name: 🔨 Compilar proyecto con tests
+        run: mvn clean verify
 
       - name: 📊 Análisis SonarCloud (sin recompilar)
         env:
