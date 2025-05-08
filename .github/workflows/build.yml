@@ -1,6 +1,5 @@
 name: 🛠️ Backend Build & SonarCloud
 
-
 on:
   push:
     branches: [ backend ]
